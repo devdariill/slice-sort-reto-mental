@@ -1,26 +1,31 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 const COLORS:Color[] =[
   {
     name: 'red',
-    color: '#ff0000'
+    color: '#ff0000',
+    correct: false
   },
   {
     name: 'blue',
-    color: '#0000ff'    
+    color: '#0000ff',
+    correct: false
   },
   {
     name: 'green',
-    color: '#00ff00'
+    color: '#00ff00',
+    correct: false
   },
   {
     name: 'yellow',
-    color: '#ffff00'
+    color: '#ffff00',
+    correct: false
   }
 ]
 type Color = {
   name: string
   color: string
+  correct: boolean
 }
 
 function App() {
@@ -28,10 +33,11 @@ function App() {
   const [time, setTime] = useState<number>(0)
   const [score, setScore] = useState<number>(0)
 
-  // const [correctColor, setCorrectColor] = useState<null|Color>(null)
   // const [wrongColor, setWrongColor] = useState<null|Color>(null)
-
+  // const [correctColor, setCorrectColor] = useState<null|Color>(null)
+  
   const [gameColors, setGameColors] = useState<(Color &{correct:boolean})[]>([])
+  const correctColor = useMemo<Color>(()=>gameColors.find(color => color.correct)!,[gameColors])
   
   useEffect(()=>{
     let interval: number // NodeJS.Timeout
@@ -50,7 +56,7 @@ function App() {
     const [correctColor, wrongColor] = COLORS.slice().sort(()=>Math.random() - 0.5)
     setGameColors([
       {...correctColor,correct:true},
-      {...wrongColor,correct:false}
+      wrongColor
     ].sort(()=>Math.random() - 0.5))
 
     // setCorrectColor(correctColor)
@@ -59,30 +65,34 @@ function App() {
   }
 
   const handlerColorClick = (clickColor:Color) => {
-    if (clickColor === correctColor) {
-      setScore(score => score + 1)
+    if (clickColor.correct) setScore(score => score + 1)
+
+    if (score === 10) {
+      setStatus('finished')
+      return
     }
+    
     const [color, wrongColor] = COLORS.slice().sort(()=>Math.random() - 0.5)
     setGameColors([{...color,correct:true},{...wrongColor,correct:false}].sort(()=>Math.random() - 0.5))
   }
 
   return (
     <main className='h-screen flex flex-col w-screen'>
-      <header className='flex gap-x-3 text-xs  w-full justify-center'>
-        <h1>{score} puntos</h1>
-        <h1>{time} segundos</h1>
+      <header className='flex gap-x-3 w-full justify-center'>
+        <h2>{score} puntos</h2>
+        <h2>{time} segundos</h2>
       </header>
       { status === 'playing' &&
-        <section className='w-full h-full items-center justify-center flex bg-black'>
-          <span className='capitalize text-5xl font-semibold ' style={{color:wrongColor?.color}}>{correctColor!.name}</span>
+        <section className='w-full h-full items-center justify-center flex'>
+          <span className='capitalize text-5xl font-semibold ' style={{color:gameColors[1].color}}>{correctColor.name}</span>
         </section>
       } 
       <footer className={`w-full flex ${status ==='initial' ? 'justify-center items-center  h-full' : 'items-end justify-center' }`}>
         <button onClick={()=>status === 'initial' ? handlePlay() : setStatus('initial')}>{status === 'initial' ?'Play':'Reset'}</button> 
-        {status === 'playing' && correctColor && wrongColor &&
+        {status === 'playing' &&
           <>
-            <button style={{backgroundColor:correctColor.color}} className='h-28 w-28' onClick={()=>handlerColorClick(correctColor)}/>
-            <button style={{backgroundColor:wrongColor.color}} className='h-28 w-28' onClick={()=>handlerColorClick(wrongColor)}/>
+            <button style={{backgroundColor:gameColors[0].color}} className='h-28 w-28' onClick={()=>handlerColorClick(gameColors[0])}/>
+            <button style={{backgroundColor:gameColors[1].color}} className='h-28 w-28' onClick={()=>handlerColorClick(gameColors[1])}/>
           </>
         }
       </footer>
