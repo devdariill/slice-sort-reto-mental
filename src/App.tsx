@@ -28,12 +28,13 @@ function App() {
   const [time, setTime] = useState<number>(0)
   const [score, setScore] = useState<number>(0)
 
-  const [color, setColor] = useState<null|Color>(null)
+  const [correctColor, setCorrectColor] = useState<null|Color>(null)
   const [wrongColor, setWrongColor] = useState<null|Color>(null)
+
   
   useEffect(()=>{
     let interval: number // NodeJS.Timeout
-    if (status === 'playing') {
+    if (status === 'playing') {  
       interval = setInterval(() => {
         setTime(time => time + 1)
       }, 1000);
@@ -46,26 +47,38 @@ function App() {
     setTime(0)
     setScore(0)
     const [color, wrongColor] = COLORS.slice().sort(()=>Math.random() - 0.5)
-    setColor(color)
+    setCorrectColor(color)
     setWrongColor(wrongColor)
     // setColor(COLORS[Math.floor(Math.random() * COLORS.length)])
+  }
+
+  const handlerColorClick = (clickColor:Color) => {
+    if (clickColor === correctColor) {
+      setScore(score => score + 1)
+    }
+    const [color, wrongColor] = COLORS.slice().sort(()=>Math.random() - 0.5)
+    setCorrectColor(color)
+    setWrongColor(wrongColor)
   }
 
   return (
     <main className='h-screen flex flex-col w-screen'>
       <header className='flex gap-x-3 text-xs  w-full justify-center'>
-        <h1>{0} puntos</h1>
+        <h1>{score} puntos</h1>
         <h1>{time} segundos</h1>
       </header>
       { status === 'playing' &&
-        <section className='w-full justify-center flex mt-5'>
-          <span className='capitalize'>{color!.name}</span>
+        <section className='w-full h-full items-center justify-center flex bg-black'>
+          <span className='capitalize text-5xl font-semibold ' style={{color:wrongColor?.color}}>{correctColor!.name}</span>
         </section>
       } 
-      <footer className={`w-full h-full flex ${status ==='initial' ? 'justify-center items-center' : 'items-end justify-center' }`}>
+      <footer className={`w-full flex ${status ==='initial' ? 'justify-center items-center  h-full' : 'items-end justify-center' }`}>
         <button onClick={()=>status === 'initial' ? handlePlay() : setStatus('initial')}>{status === 'initial' ?'Play':'Reset'}</button> 
-        {status === 'playing' && color && 
-          <button style={{backgroundColor:color.color}} className='text-black h-28 w-28' onClick={()=>setStatus('finished')}/>
+        {status === 'playing' && correctColor && wrongColor &&
+          <>
+            <button style={{backgroundColor:correctColor.color}} className='h-28 w-28' onClick={()=>handlerColorClick(correctColor)}/>
+            <button style={{backgroundColor:wrongColor.color}} className='h-28 w-28' onClick={()=>handlerColorClick(wrongColor)}/>
+          </>
         }
       </footer>
     </main>
