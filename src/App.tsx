@@ -1,34 +1,25 @@
 import { useState } from 'react'
-import './App.css'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const [status, setStatus] = useState<'initial'|'playing'|'finished'>('initial')
+  const [time, setTime] = useState<number>(0)
+  const [score, setScore] = useState<number>(0)
+  
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <main className='h-screen flex flex-col w-screen'>
+      <header className='flex gap-x-3 text-xs  w-full justify-center'>
+        <h1>{0} puntos</h1>
+        <h1>{0} segundos</h1>
+      </header>
+      { status === 'playing' &&
+        <section>
+          <span>Blanco</span>
+        </section>
+      } 
+      <footer className='w-full h-full flex justify-center items-center'>
+        <button onClick={()=>status === 'initial' ? setStatus('playing') : setStatus('initial')}>{status === 'initial' ?'Play':'Reset'}</button> 
+      </footer>
+    </main>
   )
 }
 
