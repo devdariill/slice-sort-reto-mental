@@ -45,6 +45,9 @@ function App() {
     setStatus('playing')
     setTime(0)
     setScore(0)
+    const [color, wrongColor] = COLORS.slice().sort(()=>Math.random() - 0.5)
+    setColor(color)
+    setWrongColor(wrongColor)
     // setColor(COLORS[Math.floor(Math.random() * COLORS.length)])
   }
 
