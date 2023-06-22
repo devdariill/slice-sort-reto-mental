@@ -28,9 +28,10 @@ function App() {
   const [time, setTime] = useState<number>(0)
   const [score, setScore] = useState<number>(0)
 
-  const [correctColor, setCorrectColor] = useState<null|Color>(null)
-  const [wrongColor, setWrongColor] = useState<null|Color>(null)
+  // const [correctColor, setCorrectColor] = useState<null|Color>(null)
+  // const [wrongColor, setWrongColor] = useState<null|Color>(null)
 
+  const [gameColors, setGameColors] = useState<(Color &{correct:boolean})[]>([])
   
   useEffect(()=>{
     let interval: number // NodeJS.Timeout
@@ -46,9 +47,14 @@ function App() {
     setStatus('playing')
     setTime(0)
     setScore(0)
-    const [color, wrongColor] = COLORS.slice().sort(()=>Math.random() - 0.5)
-    setCorrectColor(color)
-    setWrongColor(wrongColor)
+    const [correctColor, wrongColor] = COLORS.slice().sort(()=>Math.random() - 0.5)
+    setGameColors([
+      {...correctColor,correct:true},
+      {...wrongColor,correct:false}
+    ].sort(()=>Math.random() - 0.5))
+
+    // setCorrectColor(correctColor)
+    // setWrongColor(wrongColor)
     // setColor(COLORS[Math.floor(Math.random() * COLORS.length)])
   }
 
@@ -57,8 +63,7 @@ function App() {
       setScore(score => score + 1)
     }
     const [color, wrongColor] = COLORS.slice().sort(()=>Math.random() - 0.5)
-    setCorrectColor(color)
-    setWrongColor(wrongColor)
+    setGameColors([{...color,correct:true},{...wrongColor,correct:false}].sort(()=>Math.random() - 0.5))
   }
 
   return (
